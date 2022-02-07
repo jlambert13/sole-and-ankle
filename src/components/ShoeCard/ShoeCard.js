@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components/macro';
+import React from "react";
+import styled from "styled-components/macro";
 
-import { COLORS, WEIGHTS } from '../../constants';
-import { formatPrice, pluralize, isNewShoe } from '../../utils';
-import Spacer from '../Spacer';
+import { COLORS, WEIGHTS } from "../../constants";
+import { formatPrice, pluralize, isNewShoe } from "../../utils";
+import Spacer from "../Spacer";
 
 const ShoeCard = ({
   slug,
@@ -35,20 +35,40 @@ const ShoeCard = ({
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
+          {variant !== "default" ? (
+            <Tag variant={variant}>
+              {variant === "on-sale" ? "Sale" : "Just released!"}
+            </Tag>
+          ) : null}
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price onSale={Boolean(salePrice)}>{formatPrice(price)}</Price>
         </Row>
         <Row>
-          <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          <ColorInfo>{pluralize("Color", numOfColors)}</ColorInfo>
+          {salePrice ? <SalePrice>{formatPrice(salePrice)}</SalePrice> : null}
         </Row>
       </Wrapper>
     </Link>
   );
 };
+
+const Tag = styled.div`
+  background: ${(props) =>
+    props.variant === "on-sale" ? COLORS.primary : COLORS.secondary};
+  color: ${COLORS.white};
+  padding: 0 10px;
+  position: absolute;
+  right: -4px;
+  top: 12px;
+  height: 32px;
+  font-weight: ${WEIGHTS.bold};
+  line-height: 32px;
+  border-radius: 2px;
+`;
 
 const Link = styled.a`
   text-decoration: none;
@@ -61,10 +81,14 @@ const ImageWrapper = styled.div`
   position: relative;
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  width: 100%;
+`;
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Name = styled.h3`
@@ -72,7 +96,10 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  text-decoration: ${(props) => (props.onSale ? "line-through" : "none")};
+  color: ${(props) => (props.onSale ? COLORS.gray[700] : COLORS.gray[900])};
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
